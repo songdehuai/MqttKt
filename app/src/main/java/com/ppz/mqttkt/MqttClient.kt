@@ -45,12 +45,12 @@ class MqttClient : Service() {
         }
 
         fun start(context: Context) {
-            val intent = Intent(context, MqttClient::class.java)
+            val intent = Intent(context, com.ppz.mqttkt.MqttClient::class.java)
             context.startService(intent)
         }
 
         fun stop(context: Context) {
-            val intent = Intent(context, MqttClient::class.java)
+            val intent = Intent(context, com.ppz.mqttkt.MqttClient::class.java)
             context.stopService(intent)
         }
 

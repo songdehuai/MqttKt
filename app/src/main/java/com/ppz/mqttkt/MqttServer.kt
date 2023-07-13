@@ -16,6 +16,10 @@ import io.moquette.interception.InterceptHandler
 import io.moquette.interception.messages.InterceptConnectMessage
 import io.moquette.interception.messages.InterceptConnectionLostMessage
 import io.moquette.interception.messages.InterceptDisconnectMessage
+import io.netty.buffer.Unpooled
+import io.netty.handler.codec.mqtt.MqttMessageBuilders
+import io.netty.handler.codec.mqtt.MqttQoS
+import java.nio.charset.Charset
 import java.util.Properties
 import java.util.logging.LogManager
 import java.util.logging.Logger
@@ -29,7 +33,7 @@ class MqttServer : Service() {
 
         private val TAG = "MQTT服务端"
 
-        private const val MQTT_SERVER_FILE_PATH = "MqttServer"
+        private const val MQTT_SERVER = "MqttServer"
 
         private var logger: Logger? = null
         private var mqttBroker: Server? = null
@@ -42,6 +46,18 @@ class MqttServer : Service() {
         fun stop(context: Context) {
             val intent = Intent(context, MqttServer::class.java)
             context.stopService(intent)
+        }
+
+
+        fun internalPublish(topic: String, payload: String) {
+            val msgByteBuf = Unpooled.copiedBuffer(payload, Charset.defaultCharset())
+            val message = MqttMessageBuilders.publish()
+                .topicName(topic)
+                .retained(false)
+                .qos(MqttQoS.EXACTLY_ONCE)
+                .payload(msgByteBuf)
+                .build()
+            mqttBroker?.internalPublish(message, MQTT_SERVER)
         }
     }
 
